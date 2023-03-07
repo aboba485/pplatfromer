@@ -11,12 +11,19 @@ screen = pg.display.set_mode((500, 500))
 #--------------------------------------------- Для переменных-------
 
 #-----------------------цвета^^^
-back_day_fight = pg.image.load('back_fight_day.png').convert_alpha()
-back_day_fight = pg.transform.scale(back_day_fight, (500, 500))
+day_1layer = pg.image.load("day_1layer.png").convert_alpha()
+day_1layer = pg.transform.scale(day_1layer, (500,500))
 
-back_night_fight = pg.image.load('back_fight_night.png').convert_alpha()
-back_night_fight = pg.transform.scale(back_night_fight, (500, 500))
+day_2layer = pg.image.load("day_2layer.png").convert_alpha()
+day_2layer = pg.transform.scale(day_2layer, (500,500))
 
+night_1layer = pg.image.load("night_1layer.png").convert_alpha()
+night_1layer = pg.transform.scale(night_1layer, (500,500))
+
+night_2layer = pg.image.load("night_2layer.png").convert_alpha()
+night_2layer = pg.transform.scale(night_2layer, (500,500))
+
+#--------------
 sun_battle = pg.image.load('sun.png').convert_alpha()
 sun_battle = pg.transform.scale(sun_battle, (150, 150))
 
@@ -27,37 +34,69 @@ main_char = pg.transform.scale(main_char, (150, 150))
 main_char_left = pg.image.load('main_char_left.png').convert_alpha()
 main_char_left = pg.transform.scale(main_char_left, (150, 150))
 
-armor_for_mch = pg.image.load('armor_mc.png')
+armor_for_mch = pg.image.load('armor_mc.png').convert_alpha()
 armor_for_mch = pg.transform.scale(armor_for_mch, (240,240))
 
-colonna_for_mch = pg.image.load('colonna_f_ar_mc.png')
+colonna_for_mch = pg.image.load('colonna_f_ar_mc.png').convert_alpha()
 colonna_for_mch = pg.transform.scale(colonna_for_mch, (130,130))
+
+pet_mch_left = pg.image.load('down_pet_left.png').convert_alpha()
+pet_mch_left = pg.transform.scale(pet_mch_left, (100,100))
+
+pet_mch_right = pg.image.load('down_right_pet.png').convert_alpha()
+pet_mch_right = pg.transform.scale(pet_mch_right, (100,100))
 
 
 #-----------------------персонажи^^^
 
 char_x_char = 1
 char_y_char = 310
+
+
 gravitation = 3
+
 jump = 60
+
+
 flagi = 0
 sun_y_battle = 10
-y_armor_char =220
-down_sun_battle_flag = True
-up_sun_battle_flag = False
+y_armor_char = 220
+
+#180 для нижнего    
+
+armor_x = 269
+armor_y = 220
+
+down_sun_y_flag = True
+up_sun_y_flag = False
+
+#
+left_character_flag = False
+right_character_flag = True
+
+#день и ночь флаги
+day_flag = True
+night_flag = False
 
 
+#Оружие вверх и вниз
+armor_y_up_flag = False
+armor_y_down_flag = False
 
-left_flag = False
-right_flag = False
+#движение оружия вправо и влево
+armor_x_left_flag = False
+armor_x_right_flag = True
+
+f_down_right = False
+f_down_left = False
+f_up_right = True
+f_up_left_ = False 
 
 
-background_night_flag_battle_batle = False
-background_battle_flag = False
 
 #-----------------------все остальное^^^
 
-#---------------------------------------------^
+#---------------------------------------------
 
 
 clock = pg.time.Clock()
@@ -80,100 +119,158 @@ while running:
         if char_y_char>310:
             char_y_char = 310
 
-    #флаги от солнца
+        #флаги от солнца
     if sun_y_battle<=10:
-        down_sun_battle_flag=True
-        up_sun_battle_flag = False
+        down_sun_y_flag=True
+        up_sun_y_flag = False
     elif sun_y_battle>265:
-        up_sun_battle_flag = True
-        down_sun_battle_flag = False
+        up_sun_y_flag = True
+        down_sun_y_flag = False
     
 
     #смена дня и ночи(движения солнца)
-    if down_sun_battle_flag:
+    if down_sun_y_flag:
         sun_y_battle+=0.5
-    elif up_sun_battle_flag:
+    elif up_sun_y_flag:
         sun_y_battle-=0.5
-    #смена дня и ночи(смена фона)
-    
-    if 12<sun_y_battle<127.5:
-        background_battle_flag= True
-        background_night_flag_battle_batle = False
-    
-    elif 127.5 <=sun_y_battle<=265:
-        background_night_flag_battle_batle = True
-        background_battle_flag= False
 
-    #смена fona
-    if background_battle_flag== True:
-        screen.blit(back_day_fight,(0,0)) 
-    elif background_night_flag_battle_batle == True:
-        screen.blit(back_night_fight,(0,0))              
+    if 11<sun_y_battle<100:
+        day_flag = True
+        night_flag = False
+    elif 100<=sun_y_battle<=265:
+        night_flag = True
+        day_flag = False
 
+    if night_flag == False and day_flag == True:
+        screen.blit(day_2layer,(0,0))
+    elif night_flag == True and day_flag == False:
+        screen.blit(night_2layer,(0,0))
+
+    screen.blit(sun_battle,(300,sun_y_battle))
     
-
-    #заливка главного экрана
-    screen.blit(sun_battle,(200,sun_y_battle))
-    #платформа
-    #screen.blit(platform,(200,240))
+    if night_flag == False and day_flag == True:
+        screen.blit(day_1layer,(0,0))
+    elif night_flag == True and day_flag == False:
+        screen.blit(night_1layer,(0,0))
     
 
-    #вывод персонажа на экран
-    
-
-    left_flag = False
-    right_flag = False
+    left_character_flag = False
+    right_character_flag = False 
 
 
     #управление персонажа
     pk = pg.key.get_pressed()
-    
 
-    #-----------------------------
-    if pk[pg.K_LEFT]:
-        left_flag = True
-        flagi=2
+    #низ или верх (флаги)
+
+
+#------------------------------
+    if pk[pg.K_DOWN] and pk[pg.K_RIGHT]:
+        f_down_right = True
+        f_down_left = False
+        f_up_right = False
+        f_up_left_ = False 
+        char_x_char+=2
+
+
+
+    elif pk[pg.K_DOWN] and pk[pg.K_LEFT]:
+        f_down_right = False
+        f_down_left = True
+        f_up_right = False
+        f_up_left_ = False
         char_x_char-=2
 
+    elif pk[pg.K_LEFT]:
+        f_down_right = False
+        f_down_left = False
+        f_up_right = False
+        f_up_left_ = True
+        char_x_char-=2
 
     elif pk[pg.K_RIGHT]:
-        right_flag = True
+        f_down_right = False
+        f_down_left = False
+        f_up_right = True
+        f_up_left_ = False 
         char_x_char+=2
-        flagi=3      
- 
-  
+
+
+#-----------------------------------
+
+    #стенки против персонажа
     if char_x_char<=-29:
-         char_x_char=-30
+            char_x_char=-30
     elif char_x_char>=401:
-         char_x_char=400
-         
-    #  --------------------------------
-         
- 
-     #вывод персонажа на экран
-    if right_flag:
-        screen.blit(main_char, (char_x_char,char_y_char))
+            char_x_char=400
 
-        
-    elif left_flag:
-        screen.blit(main_char_left, (char_x_char,char_y_char))
 
-    elif flagi == 0:
-        screen.blit(main_char, (char_x_char,char_y_char))
+    if f_up_right == True or f_up_left_ == True:
+        if char_x_char>=235:
+            char_x_char = 235
 
-    else:
-        if flagi == 3:
-            screen.blit(main_char, (char_x_char,char_y_char))
-        elif flagi == 2:
-            screen.blit(main_char_left, (char_x_char,char_y_char))
-     
-    screen.blit(armor_for_mch,(270,220))
-    screen.blit(colonna_for_mch,(320, 325))
+
+    if f_up_right == True:
+        screen.blit(main_char,(char_x_char,char_y_char))
+
+    elif f_up_left_ == True:
+        screen.blit(main_char_left,(char_x_char,char_y_char))
+    
+    elif f_down_left == True:
+        screen.blit(pet_mch_left,(char_x_char,char_y_char+6))
+
+    elif f_down_right == True:
+        screen.blit(pet_mch_right,(char_x_char,char_y_char))
+
+
+
+    #движения оружия 
+    #движения вправо и влево
+    if armor_x_right_flag == False and armor_x_left_flag == False:
+        armor_x-=1 
+    
+    elif armor_x<=260:
+        armor_x_right_flag = True
+        armor_x_left_flag = False
+    elif armor_x>=278:
+        armor_x_left_flag = True
+        armor_x_right_flag = False
+
+    if armor_x_right_flag == True:
+        armor_x+=1
+    elif armor_x_left_flag == True:
+        armor_x-=1
+
+    #-------------------------------
+
+    #движения вверх и вниз    
+    if armor_y>=220:
+        armor_y_up_flag = True
+        armor_y_down_flag = False
+    
+    elif armor_y<=180: 
+        armor_y_down_flag = True 
+        armor_y_up_flag = False
+    
+
+    if armor_y_down_flag == False and armor_y_up_flag == False:
+        armor_y-=1
+    elif armor_y_up_flag == True:
+        armor_y-=1
+    elif armor_y_down_flag == True:
+        armor_y+=1
 
     
-    # обновление экрана
-    pg.display.flip()
+    
 
+    screen.blit(armor_for_mch,(armor_x,armor_y))
+
+
+    screen.blit(colonna_for_mch,(320, 325))
+    print(char_x_char)
+    
+    # обновление экрана
+    pg.display.flip()         
 
 # Quit pygame
 pg.quit()
